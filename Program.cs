@@ -108,7 +108,7 @@ internal class Program
                 station.persons.Add(new Person(buses[new Random().Next(0, buses.Count)].numberOfBus));
             }
             Console.WriteLine($"Люди пришли на станцию {station.numberOfStation} в количестве {count} человек");
-            Thread.Sleep(new Random().Next(100, 600));
+            Thread.Sleep(new Random().Next(1000, 4000));
         }
     }
 
