@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data.SqlTypes;
+﻿using System.Data.SqlTypes;
 using System.Threading;
 
 
@@ -35,24 +34,23 @@ class Bus
     }
     public void GetPeoplesFromStation(List<Person> peoples)
     {
-        if (currentCountOfPeoples == maxCountOfPeoples) Console.WriteLine("Автобус переполнен!!");
-        else
+        if(currentCountOfPeoples ==maxCountOfPeoples)
         {
-            foreach (Person person in peoples)
-            {
-                if (person.numberOfBus == numberOfBus && currentCountOfPeoples <= maxCountOfPeoples)
-                    currentCountOfPeoples++;
-                Console.WriteLine($"Автобус номер {numberOfBus} забрал в себя {currentCountOfPeoples} человек");
-            }
+            Console.WriteLine("Автобус переполнен");
+            return;
         }
- 
-
+        foreach(Person person in peoples)
+        {
+            if (person.numberOfBus == numberOfBus && currentCountOfPeoples<=maxCountOfPeoples)
+                currentCountOfPeoples++;
+        }
+        Console.WriteLine($"Автобус номер {numberOfBus} забрал в себя {currentCountOfPeoples} человек");
     }
 
 }
 internal class Program
 {
-    static Semaphore sema = new Semaphore(3, 5);
+    static Semaphore sema = new Semaphore(2,2);
     static List<Bus> buses = new List<Bus>()
     {
     new Bus(125, 400, new Random().Next(0, 400)),
@@ -61,7 +59,7 @@ internal class Program
     new Bus(543, 120, new Random().Next(0, 120)),
     new Bus(111, 100, new Random().Next(0, 100)),
     new Bus(60, 332, new Random().Next(0, 332)),
-    };
+    }; 
     static List<BusStation> stations = new List<BusStation>()
     {
         new BusStation(1),
@@ -70,6 +68,7 @@ internal class Program
     };
     static void Main(string[] args)
     {
+        
         while (true)
         {
             for (int i = 0; i < stations.Count; i++)
@@ -82,16 +81,16 @@ internal class Program
             {
                 Task.Run(() => ApproachStation(stations[i])).Wait();
             }
-        }
+        }  
     }
     static void ApproachStation(BusStation station)
     {
         sema.WaitOne();
         List<int> numbers = new List<int>();
-        for (int i = 0; i < buses.Count; i++)
+        for(int i = 0; i < buses.Count; i++)
         {
             Thread.Sleep(400);
-            int tmp = new Random().Next(0, buses.Count);
+            int tmp = new Random().Next(0,buses.Count);
             while (numbers.Contains(tmp)) tmp = new Random().Next(0, buses.Count);
             numbers.Add(tmp);
             buses[tmp].GetPeoplesFromStation(station.persons);
@@ -100,15 +99,17 @@ internal class Program
     }
     static void SetPeoples(BusStation station)
     {
-        while (true)
+        while(true) 
         {
+      
             int count = new Random().Next(0, 150);
             for (int i = 0; i < count; i++)
             {
                 station.persons.Add(new Person(buses[new Random().Next(0, buses.Count)].numberOfBus));
             }
             Console.WriteLine($"Люди пришли на станцию {station.numberOfStation} в количестве {count} человек");
-            Thread.Sleep(new Random().Next(100,500));
+            Thread.Sleep(new Random().Next(100, 600));
         }
     }
+
 }
